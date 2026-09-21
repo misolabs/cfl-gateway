@@ -1,30 +1,14 @@
-import Fastify, { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import Fastify, { FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
+import type { HealthCheckResponse, TrainSchedule, TrainService } from './model.js';
+import { MockTrainService } from './service-mock.js';
 
 const fastify: FastifyInstance = Fastify({ logger: true });
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
 const HOST: string = '0.0.0.0';
 
-interface HealthCheckResponse {
-  status: string;
-  timestamp: string;
-}
-
-interface DataItem {
-  id: number;
-  name: string;
-  value: number;
-}
-
-interface MockDataResponse {
-  success: boolean;
-  data: {
-    message: string;
-    timestamp: string;
-    version: string;
-    items: DataItem[];
-  };
-}
+// Swap this for the real implementation once it is available.
+const trainService: TrainService = new MockTrainService();
 
 // Register CORS plugin
 await fastify.register(cors, {
@@ -32,32 +16,14 @@ await fastify.register(cors, {
 });
 
 // Health check endpoint
-fastify.get<{ Reply: HealthCheckResponse }>(
-  '/health',
-  async (request: FastifyRequest, reply: FastifyReply) => {
-    return { status: 'ok', timestamp: new Date().toISOString() };
-  }
-);
+fastify.get<{ Reply: HealthCheckResponse }>('/health', async () => {
+  return { status: 'ok', timestamp: new Date().toISOString() };
+});
 
-// Mock endpoint
-fastify.get<{ Reply: MockDataResponse }>(
-  '/api/data',
-  async (request: FastifyRequest, reply: FastifyReply) => {
-    return {
-      success: true,
-      data: {
-        message: 'Hello from CFL Gateway',
-        timestamp: new Date().toISOString(),
-        version: '1.0.0',
-        items: [
-          { id: 1, name: 'Item 1', value: 100 },
-          { id: 2, name: 'Item 2', value: 200 },
-          { id: 3, name: 'Item 3', value: 300 }
-        ]
-      }
-    };
-  }
-);
+// Train schedule endpoint
+fastify.get<{ Reply: TrainSchedule }>('/api/data', async () => {
+  return trainService.getSchedule();
+});
 
 // Start server
 const start = async () => {
@@ -71,4 +37,3 @@ const start = async () => {
 };
 
 start();
-
