@@ -1,29 +1,21 @@
-import Fastify, { FastifyInstance } from 'fastify';
-import cors from '@fastify/cors';
-import type { HealthCheckResponse, TrainSchedule, TrainService } from './model.js';
+import type { TrainService } from './model.js';
 import { MockTrainService } from './service-mock.js';
+import { CflInfoService } from './service.js';
+import { buildServer } from './server.js';
 
-const fastify: FastifyInstance = Fastify({ logger: true });
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
 const HOST: string = '0.0.0.0';
 
-// Swap this for the real implementation once it is available.
-const trainService: TrainService = new MockTrainService();
+/**
+ * Uses the real CFL service when an access id is configured
+ * (`MOBILITEIT_ACCESS_ID`), otherwise falls back to mock data.
+ */
+const accessId = process.env.MOBILITEIT_ACCESS_ID;
+const trainService: TrainService = accessId
+  ? new CflInfoService(accessId)
+  : new MockTrainService();
 
-// Register CORS plugin
-await fastify.register(cors, {
-  origin: true,
-});
-
-// Health check endpoint
-fastify.get<{ Reply: HealthCheckResponse }>('/health', async () => {
-  return { status: 'ok', timestamp: new Date().toISOString() };
-});
-
-// Train schedule endpoint
-fastify.get<{ Reply: TrainSchedule }>('/api/data', async () => {
-  return trainService.getSchedule();
-});
+const fastify = await buildServer(trainService);
 
 // Start server
 const start = async () => {

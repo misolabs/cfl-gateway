@@ -1,3 +1,9 @@
+Official doc
+https://data.public.lu/en/datasets/api-mobiliteit-lu/
+
+User doc
+https://github.com/Felix3qH4/Mobiliteit.lu-API-documentation/tree/main
+
 Nearby stops endpoint
 https://cdt.hafas.de/opendata/apiserver/location.nearbystops?accessId=94782cef-c625-4328-929a-1696597a74ed&format=json&originCoordLat=49.605689&originCoordLong=6.127825&r=1000&maxNo=100&type=SE
 

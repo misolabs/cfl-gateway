@@ -22,7 +22,7 @@ export interface TrainSchedule {
  * implementation backed by the upstream CFL API can be added later.
  */
 export interface TrainService {
-  getSchedule(): Promise<TrainSchedule>;
+  getSchedule(fromId: number, toId: number, maxConnections: number): Promise<TrainSchedule>;
 }
 
 /** Response of the health check endpoint. */

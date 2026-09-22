@@ -29,7 +29,7 @@ function buildTrains(): Train[] {
  * See `briefings/mock.md` for the generation rules.
  */
 export class MockTrainService implements TrainService {
-  async getSchedule(): Promise<TrainSchedule> {
+  async getSchedule(fromId: number, toId: number, maxConnections: number): Promise<TrainSchedule> {
     return {
       destination: randomDestination(),
       timestamp: new Date().toISOString(),

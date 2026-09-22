@@ -14,15 +14,36 @@ A Node.js API server built with Fastify, ready for deployment on Fly.io.
 npm install
 ```
 
+### Configuration
+
+Copy `.env.example` to `.env` and paste your mobiliteit.lu access id:
+
+```bash
+cp .env.example .env
+```
+
+```
+MOBILITEIT_ACCESS_ID=paste-your-access-id-here
+```
+
+Without an access id the server falls back to the mock train service.
+
 ### Development
 
-Run the server in watch mode:
+Run the server in watch mode (loads `.env` if present):
 
 ```bash
 npm run dev
 ```
 
 The server will start on `http://localhost:3000`
+
+### Tests
+
+```bash
+npm test        # unit + API tests (node:test via tsx)
+npm run typecheck
+```
 
 ### Production
 
@@ -40,9 +61,11 @@ Returns server status and timestamp.
 
 ### Mock Data
 ```
-GET /api/data
+GET /api/data?from=300031019&to=300439001&max=3
 ```
-Returns sample JSON data.
+Returns the next departures from station `from` that pass through station `to`,
+limited to `max` connections. Defaults: Luxembourg Gare Centrale →
+Esch-sur-Alzette, 3 connections.
 
 ## Deployment to Fly.io
 
@@ -82,6 +105,7 @@ Set environment variables on Fly.io:
 
 ```bash
 flyctl secrets set PORT=3000
+flyctl secrets set MOBILITEIT_ACCESS_ID=your-access-id
 ```
 
 ### Scaling
@@ -104,4 +128,3 @@ docker run -p 3000:3000 cflgateway
 ## License
 
 ISC
-
